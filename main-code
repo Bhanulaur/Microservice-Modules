@@ -1,0 +1,49 @@
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+    Optional<Product> findBySku(String sku);
+}
+@Service
+public class ProductService {
+    private final ProductRepository repo;
+
+    public ProductService(ProductRepository repo) {
+        this.repo = repo;
+    }
+
+    public Product create(Product product) {
+        return repo.save(product);
+    }
+
+    public List<Product> list() {
+        return repo.findAll();
+    }
+}
+import io.reactivex.rxjava3.core.Flowable;
+
+@Service
+public class AnalyticsService {
+    public void streamOrders() {
+        Flowable.range(1, 100)
+                .map(i -> "Order-" + i)
+                .subscribe(System.out::println);
+    }
+}
+@Async
+public CompletableFuture<Order> processOrder(Order order) {
+    return CompletableFuture.supplyAsync(() -> {
+        // simulate heavy task
+        sleep(2000);
+        order.setStatus("PROCESSED");
+        return order;
+    });
+}
+const express = require('express');
+const app = express();
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'Admin Dashboard' });
+});
+
+app.listen(3000, () => console.log('Admin dashboard running on 3000'));
+
+
